@@ -350,6 +350,7 @@
         let failureCount = 0;
         let totalAttempts = 0;
         const maxLevel = 10;
+        let successForNextLvl = 0
 
         // Элементы DOM
         const upgradeBtn = document.getElementById('upgradeBtn');
@@ -466,6 +467,7 @@
 
             while (currentLevel < targetLevel && attempts < 100000) {
                 attempts++;
+                successForNextLvl++;
                 totalAttempts++;
                 const successChance = calculateSuccessChance(currentLevel);
                 const success = Math.random() <= successChance;
@@ -474,6 +476,10 @@
                     currentLevel++;
                     successCount++;
                     attemptsCount = 0;
+                                // Отчет по уровню
+            levelAttemptsMap[`+${targetLevel}`] = successForNextLvl;
+            updateLevelStatsDisplay();
+                    successForNextLvl = 0;
                     addHistory(true);
                 } else {
                     failureCount++;
@@ -484,9 +490,7 @@
                 await new Promise(resolve => setTimeout(resolve, 0));
             }
 
-            // Отчет по уровню
-            levelAttemptsMap[`+${targetLevel}`] = attempts;
-            updateLevelStatsDisplay();
+
 
             const timeSpent = ((Date.now() - startTime) / 1000).toFixed(2);
             autoResultDisplay.style.display = 'block';
@@ -507,7 +511,7 @@
                 levelStatsList.appendChild(li);
             }
         }
-        let successForNextLvl = 0
+
         async function tryUpgrade() {
             if (currentLevel >= maxLevel || isAutoUpgrading || upgradeBtn.disabled) return;
 
@@ -573,7 +577,7 @@
             let autoAttempts = 0;
             let autoSuccesses = 0;
             let autoFailures = 0;
-            let successForNextLvl = 0
+            // let successForNextLvl = 0
             while (currentLevel < maxLevel && autoAttempts < 100000) { // Ограничение на случай бесконечного цикла
                 autoAttempts++;
                 totalAttempts++;
